@@ -46,5 +46,6 @@ func (c *ConsoleOutputter) Display(data *jellydata.JellyfinData) error {
 			session.NowPlayingItem,
 		)
 	}
+	fmt.Println("")
 	return nil
 }

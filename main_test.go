@@ -15,9 +15,9 @@ import (
 )
 
 var (
-	originalReadInput  = readInputFunc
+	originalReadInput    = readInputFunc
 	originalEnsureConfig = ensureConfigFunc
-	originalUserHomeDir = jellydata.OsUserHomeDir
+	originalUserHomeDir  = jellydata.OsUserHomeDir
 
 	// Mutex to protect global variables during parallel tests
 	mu sync.Mutex
@@ -226,7 +226,7 @@ func TestFlagParsing(t *testing.T) {
 			}()
 
 			os.Args = tt.args
-			
+
 			// Reset flags for each test run
 			flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
 			outputFlag = OutputConsole // Reset to default before parsing
@@ -238,27 +238,27 @@ func TestFlagParsing(t *testing.T) {
 					outputFlag = OutputConsole
 				case "ui":
 					outputFlag = OutputUI
-					default:
-						return fmt.Errorf("invalid output type: %s. Must be 'console' or 'ui'", s)
-					}
-					return nil
-				})
-				
-				err := flag.CommandLine.Parse(os.Args[1:])
-
-				if (err != nil) != tt.err {
-					// For invalid output flag, we expect an error, but not necessarily a fatal one from ensureConfigFunc.
-					// So, we only check if the error status matches the expected error status for the test.
-					if !tt.err && err != nil {
-						t.Fatalf("unexpected error: %v", err)
-					}
-				} else if tt.err && err == nil {
-					t.Fatalf("expected an error, but got none")
+				default:
+					return fmt.Errorf("invalid output type: %s. Must be 'console' or 'ui'", s)
 				}
-
-				if !tt.err && outputFlag != tt.expected {
-					t.Errorf("expected outputFlag to be %q, got %q", tt.expected, outputFlag)
-				}
+				return nil
 			})
-		}
+
+			err = flag.CommandLine.Parse(os.Args[1:])
+
+			if (err != nil) != tt.err {
+				// For invalid output flag, we expect an error, but not necessarily a fatal one from ensureConfigFunc.
+				// So, we only check if the error status matches the expected error status for the test.
+				if !tt.err && err != nil {
+					t.Fatalf("unexpected error: %v", err)
+				}
+			} else if tt.err && err == nil {
+				t.Fatalf("expected an error, but got none")
+			}
+
+			if !tt.err && outputFlag != tt.expected {
+				t.Errorf("expected outputFlag to be %q, got %q", tt.expected, outputFlag)
+			}
+		})
+	}
 }
