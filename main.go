@@ -19,20 +19,17 @@ type OutputType string
 
 const (
 	OutputConsole OutputType = "console"
-	OutputUI      OutputType = "ui"
 )
 
 var outputFlag OutputType
 
 func init() {
-	flag.Func("output", "Output mode: 'console' (default) or 'ui'", func(s string) error {
+	flag.Func("output", "Output mode: 'console'", func(s string) error {
 		switch s {
 		case "console":
 			outputFlag = OutputConsole
-		case "ui":
-			outputFlag = OutputUI
 		default:
-			return fmt.Errorf("invalid output type: %s. Must be 'console' or 'ui'", s)
+			return fmt.Errorf("invalid output type: %s. Must be 'console'", s)
 		}
 		return nil
 	})
@@ -134,14 +131,7 @@ func main() {
 		log.Fatalf("Error fetching Jellyfin data: %v", err)
 	}
 
-	var outputter output.Outputter
-
-	switch outputFlag {
-	case OutputConsole:
-		outputter = output.NewConsoleOutputter()
-	case OutputUI:
-		outputter = output.NewFyneGUIOutputter()
-	}
+	var outputter output.Outputter = output.NewConsoleOutputter()
 
 	if err := outputter.Display(data); err != nil {
 		log.Fatalf("Error displaying Jellyfin data: %v", err)
